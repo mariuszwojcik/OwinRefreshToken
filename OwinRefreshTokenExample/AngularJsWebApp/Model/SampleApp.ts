@@ -5,5 +5,4 @@ module SampleApp {
 
     var sampleApp = angular.module("sampleApp", []);
 
-
 }

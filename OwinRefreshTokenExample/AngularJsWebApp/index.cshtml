@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Web.Optimization
+
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>OWIN Refresh Token sample application</title>
@@ -11,7 +13,8 @@
     <script src="Scripts/angular-route.js"></script>
     <script src="Scripts/angular-resource.min.js"></script>
 
-    <script src="Model/SampleApp.js"></script>
+    <!--<script src="Model/SampleApp.js"></script>-->
+
 </head>
 <body ng-app="sampleApp">
 
@@ -22,5 +25,8 @@
         <h1>Hello {{yourName}}!</h1>
     </div>
 
+
+
+    @Scripts.Render("~/bundles/angular")
 </body>
 </html>
