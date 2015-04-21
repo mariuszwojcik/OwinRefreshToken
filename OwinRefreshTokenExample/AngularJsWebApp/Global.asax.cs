@@ -51,7 +51,8 @@ namespace AngularJsWebApp
         {
             var angularScripts = new ScriptBundle("~/bundles/angular")
                 .IncludeDirectory(@"~/Controllers", "*.js", true)
-                .IncludeDirectory(@"~/Model", "*.js", true);
+                .IncludeDirectory(@"~/Model", "*.js", true)
+                .Include("~/SampleApp.js");
             BundleTable.Bundles.Add(angularScripts);
 
             //Bundle Css

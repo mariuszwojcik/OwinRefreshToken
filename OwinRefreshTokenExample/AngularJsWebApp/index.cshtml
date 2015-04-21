@@ -13,19 +13,12 @@
     <script src="Scripts/angular-route.js"></script>
     <script src="Scripts/angular-resource.min.js"></script>
 
-    <!--<script src="Model/SampleApp.js"></script>-->
-
 </head>
 <body ng-app="sampleApp">
 
-    <div>
-        <label>Name:</label>
-        <input type="text" ng-model="yourName" placeholder="Enter a name here">
-        <hr>
-        <h1>Hello {{yourName}}!</h1>
+    <div class="container">
+        <ng-view></ng-view>
     </div>
-
-
 
     @Scripts.Render("~/bundles/angular")
 </body>
