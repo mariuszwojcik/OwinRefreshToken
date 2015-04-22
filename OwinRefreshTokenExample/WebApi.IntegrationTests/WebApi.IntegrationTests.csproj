@@ -78,6 +78,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AccessingProtectedResourceSpecs.cs" />
+    <Compile Include="AuthorizingUserSpecs.cs" />
     <Compile Include="TestWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
