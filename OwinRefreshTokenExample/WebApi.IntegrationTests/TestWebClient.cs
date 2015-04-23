@@ -2,6 +2,8 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace WebApi.IntegrationTests
 {
@@ -9,6 +11,7 @@ namespace WebApi.IntegrationTests
     {
         private const string WebApiUrl = @"http://localhost:6098/";
         private const string TokenEndpointUrl = @"https://localhost:44301/token";
+        private OAuthToken _token;
 
         public HttpStatusCode LastOperationHttpStatusCode { get; private set; }
 
@@ -41,7 +44,7 @@ namespace WebApi.IntegrationTests
             return LoadData("SecurityTest/protected");
         }
 
-        public string Login(string username, string password)
+        public OAuthToken Login(string username, string password)
         {
             try
             {
@@ -55,7 +58,16 @@ namespace WebApi.IntegrationTests
                 var result = UploadValues(TokenEndpointUrl, data);
                 LastOperationHttpStatusCode = HttpStatusCode.OK;
                 LastOperationResponse = System.Text.Encoding.Default.GetString(result);
-                return LastOperationResponse;
+
+                var responseSerializer = new DataContractJsonSerializer(typeof(OAuthToken));
+
+                using (var ms = new MemoryStream(result))
+                {
+                    _token = (OAuthToken) responseSerializer.ReadObject(ms);
+                    Headers[HttpRequestHeader.Authorization] = "Bearer " + _token.access_token;
+                }
+
+                return _token;
             }
             catch (WebException e)
             {
@@ -67,10 +79,27 @@ namespace WebApi.IntegrationTests
                     LastOperationResponse = sr.ReadToEnd();
                     Console.WriteLine(LastOperationResponse);
                 }
-                return string.Empty;
+                return null;
             }
 
             
         }
+
+        public void Logout()
+        {
+            Headers.Remove(HttpRequestHeader.Authorization);
+            _token = null;
+        }
+    }
+
+    [DataContract]
+    public class OAuthToken
+    {
+        [DataMember(Name=".expires")] public string expires { get; set; }
+        [DataMember(Name = ".issued")] public string issued { get; set; }
+        [DataMember] public string access_token { get; set; }
+        [DataMember] public int expires_in { get; set; }
+        [DataMember] public string token_type { get; set; }
+        [DataMember(Name = "userName")] public string username { get; set; }
     }
 }

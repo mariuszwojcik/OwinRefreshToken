@@ -6,23 +6,35 @@ using SpecsFor;
 
 namespace WebApi.IntegrationTests
 {
-    [Explicit("Requires WebApi project to run in the background.")]
+    //[Explicit("Requires WebApi project to run in the background.")]
 
     public class AuthorizingUserSpecs : SpecsFor<TestWebClient>
     {
-        private string _result;
-
-        protected override void When()
+        [Test]
+        public void when_logged_in_then_returns_token()
         {
-            _result = SUT.Login("a1@b.com", "Password1!");
+            var result = SUT.Login("a1@b.com", "Password1!");
+            
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
+            result.ShouldNotBeNull();
+            result.access_token.ShouldNotBeEmpty();
         }
 
         [Test]
-        public void then_should_load_data_successfully()
+        public void when_invalid_password_then_result_code_is_bad_request()
         {
-            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
-            Console.WriteLine(SUT.LastOperationResponse);
+            SUT.Login("a1@b.com", "Password");
+
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.BadRequest);
         }
 
+        [Test]
+        public void when_invalid_credentials_then_result_code_is_bad_request()
+        {
+            SUT.Login("test@b.com", "Password");
+
+            Console.WriteLine(SUT.LastOperationResponse);
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.BadRequest);
+        }
     }
 }

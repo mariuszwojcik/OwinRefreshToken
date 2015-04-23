@@ -5,23 +5,28 @@ using SpecsFor;
 
 namespace WebApi.IntegrationTests
 {
-    [Explicit("Requires WebApi project to run in the background.")]
+    //[Explicit("Requires WebApi project to run in the background.")]
     public class AccessingProtectedResourceSpecs : SpecsFor<TestWebClient>
     {
-        public class Given_user_not_authenticated : SpecsFor<TestWebClient>
+        [Test]
+        public void when_not_authenticated_then_should_fail_with_unauthorized_code()
         {
-            private string _result;
+            SUT.Logout();
 
-            protected override void When()
-            {
-                _result = SUT.LoadProtectedData();
-            }
+            SUT.LoadProtectedData();
 
-            [Test]
-            public void then_should_load_data_successfully()
-            {
-                SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
-            }
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
+        }
+
+        [Test]
+        public void when_authenticated_then_should_succeed()
+        {
+            SUT.Login("a1@b.com", "Password1!");
+
+
+            SUT.LoadProtectedData();
+
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
         }
     }
 }
