@@ -52,7 +52,8 @@ namespace WebApi.IntegrationTests
                 {
                     {"grant_type", "password"},
                     {"username", username},
-                    {"password", password}
+                    {"password", password},
+                    {"client_id", "OwinRefreshTokenExample"}
                 };
                 Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
                 var result = UploadValues(TokenEndpointUrl, data);
@@ -81,14 +82,55 @@ namespace WebApi.IntegrationTests
                 }
                 return null;
             }
-
-            
         }
 
         public void Logout()
         {
             Headers.Remove(HttpRequestHeader.Authorization);
             _token = null;
+        }
+
+        public string LoadSuperProtectedData()
+        {
+            return LoadData("SecurityTest/superprotected");
+        }
+
+        public OAuthToken GetAccessToken(string refreshToken)
+        {
+            try
+            {
+                var data = new NameValueCollection
+                {
+                    {"grant_type", "refresh_token"},
+                    {"refresh_token", refreshToken}
+                };
+                Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+                var result = UploadValues(TokenEndpointUrl, data);
+                LastOperationHttpStatusCode = HttpStatusCode.OK;
+                LastOperationResponse = System.Text.Encoding.Default.GetString(result);
+
+                var responseSerializer = new DataContractJsonSerializer(typeof(OAuthToken));
+
+                using (var ms = new MemoryStream(result))
+                {
+                    _token = (OAuthToken)responseSerializer.ReadObject(ms);
+                    Headers[HttpRequestHeader.Authorization] = "Bearer " + _token.access_token;
+                }
+
+                return _token;
+            }
+            catch (WebException e)
+            {
+                var response = (HttpWebResponse)e.Response;
+                LastOperationHttpStatusCode = response.StatusCode;
+                using (var s = response.GetResponseStream())
+                using (var sr = new StreamReader(s))
+                {
+                    LastOperationResponse = sr.ReadToEnd();
+                    Console.WriteLine(LastOperationResponse);
+                }
+                return null;
+            }
         }
     }
 
@@ -98,6 +140,7 @@ namespace WebApi.IntegrationTests
         [DataMember(Name=".expires")] public string expires { get; set; }
         [DataMember(Name = ".issued")] public string issued { get; set; }
         [DataMember] public string access_token { get; set; }
+        [DataMember] public string refresh_token { get; set; }
         [DataMember] public int expires_in { get; set; }
         [DataMember] public string token_type { get; set; }
         [DataMember(Name = "userName")] public string username { get; set; }

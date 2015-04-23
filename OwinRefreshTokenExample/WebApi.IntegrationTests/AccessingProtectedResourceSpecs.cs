@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using NUnit.Framework;
 using Should;
 using SpecsFor;
@@ -22,11 +23,54 @@ namespace WebApi.IntegrationTests
         public void when_authenticated_then_should_succeed()
         {
             SUT.Login("a1@b.com", "Password1!");
-
-
+            
             SUT.LoadProtectedData();
 
             SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public void when_not_authorized_then_should_fail_with_unauthorized_code()
+        {
+            SUT.Logout();
+            SUT.Login("a2@b.com", "Password1!");
+            
+            SUT.LoadSuperProtectedData();
+
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
+        }
+
+        [Test]
+        public void when_authorized_then_should_succeed()
+        {
+            SUT.Logout();
+            SUT.Login("a1@b.com", "Password1!");
+
+            SUT.LoadSuperProtectedData();
+
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
+        }
+    }
+
+    public class UsingRefreshToken : SpecsFor<TestWebClient>
+    {
+        [Test]
+        public void when_not_authenticated_then_should_fail_with_unauthorized_code()
+        {
+            var token = SUT.Login("a1@b.com", "Password1!");
+
+            SUT.LoadSuperProtectedData();
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
+
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(15));
+            SUT.LoadSuperProtectedData();
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
+
+
+            var token2 = SUT.GetAccessToken(token.refresh_token);
+            SUT.LoadSuperProtectedData();
+            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
+            
         }
     }
 }

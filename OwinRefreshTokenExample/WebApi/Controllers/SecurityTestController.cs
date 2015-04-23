@@ -16,5 +16,11 @@ namespace WebApi.Controllers
         {
             return "Hello World!";
         }
+
+        [HttpGet, Route("superprotected"), Authorize(Roles = "Administrator")]
+        public string SuperProtected()
+        {
+            return "Hello World!";
+        }
     }
 }
