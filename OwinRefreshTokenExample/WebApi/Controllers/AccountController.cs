@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -487,6 +488,43 @@ namespace WebApi.Controllers
                 _random.GetBytes(data);
                 return HttpServerUtility.UrlTokenEncode(data);
             }
+        }
+
+        #endregion
+
+        #region Role Claims management
+
+        [AllowAnonymous, HttpGet, Route("Roles")]
+        public async Task<IEnumerable<string>> GetRoles(string email)
+        {
+            var user = await UserManager.FindByEmailAsync(email) ?? new ApplicationUser();
+            
+            return user.Claims.Where(i => i.ClaimType == ClaimTypes.Role).Select(i => i.ClaimValue);
+        }
+
+        [AllowAnonymous, HttpPost, Route("Roles")]
+        public async Task<IHttpActionResult> AddRole(string email, string role)
+        {
+            var user = await UserManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return NotFound();
+
+            await UserManager.AddClaimAsync(user.Id, new Claim(ClaimTypes.Role, role));
+            return Ok();
+        }
+
+
+        [AllowAnonymous, HttpDelete, Route("Roles")]
+        public async Task<IHttpActionResult> RemoveRole(string email, string role)
+        {
+            var user = await UserManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return NotFound();
+
+            await UserManager.RemoveClaimAsync(user.Id, new Claim(ClaimTypes.Role, role));
+            return Ok();
         }
 
         #endregion

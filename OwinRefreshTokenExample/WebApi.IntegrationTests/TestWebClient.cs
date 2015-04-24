@@ -44,6 +44,16 @@ namespace WebApi.IntegrationTests
             return LoadData("SecurityTest/protected");
         }
 
+        public string LoadSuperProtectedData()
+        {
+            return LoadData("SecurityTest/superprotected");
+        }
+
+        public string LoadSecret()
+        {
+            return LoadData("SecurityTest/secret");
+        }
+
         public OAuthToken Login(string username, string password)
         {
             try
@@ -83,15 +93,28 @@ namespace WebApi.IntegrationTests
             }
         }
 
+        public string GetRoles(string email)
+        {
+            var address = String.Format("{0}/api/Account/Roles?email={1}", WebApiUrl, email);
+            return DownloadString(address);
+        }
+
+        public void AddRole(string email, string role)
+        {
+            var address = String.Format("{0}/api/Account/Roles?email={1}&role={2}", WebApiUrl, email, role);
+            UploadString(address, "POST", "");
+        }
+
+        public void RemoveRole(string email, string role)
+        {
+            var address = String.Format("{0}/api/Account/Roles?email={1}&role={2}", WebApiUrl, email, role);
+            UploadString(address, "DELETE", "");
+        }
+
         public void Logout()
         {
             Headers.Remove(HttpRequestHeader.Authorization);
             _token = null;
-        }
-
-        public string LoadSuperProtectedData()
-        {
-            return LoadData("SecurityTest/superprotected");
         }
 
         public OAuthToken GetAccessToken(string refreshToken)

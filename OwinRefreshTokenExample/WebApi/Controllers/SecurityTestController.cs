@@ -22,5 +22,11 @@ namespace WebApi.Controllers
         {
             return "Hello World!";
         }
+
+        [HttpGet, Route("secret"), Authorize(Roles = "Test")]
+        public string Secret()
+        {
+            return "Hello World!";
+        }
     }
 }

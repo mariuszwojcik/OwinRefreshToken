@@ -88,7 +88,7 @@
     </Compile>
     <Compile Include="AccessingUnprotectedResourceSpecs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UsingRefreshToken.cs" />
+    <Compile Include="UsingRefreshTokenSpecs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
