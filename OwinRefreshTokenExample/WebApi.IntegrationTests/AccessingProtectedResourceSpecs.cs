@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using NUnit.Framework;
 using Should;
 using SpecsFor;
@@ -49,28 +48,6 @@ namespace WebApi.IntegrationTests
             SUT.LoadSuperProtectedData();
 
             SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
-        }
-    }
-
-    public class UsingRefreshToken : SpecsFor<TestWebClient>
-    {
-        [Test]
-        public void when_not_authenticated_then_should_fail_with_unauthorized_code()
-        {
-            var token = SUT.Login("a1@b.com", "Password1!");
-
-            SUT.LoadSuperProtectedData();
-            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
-
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(15));
-            SUT.LoadSuperProtectedData();
-            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.Unauthorized);
-
-
-            var token2 = SUT.GetAccessToken(token.refresh_token);
-            SUT.LoadSuperProtectedData();
-            SUT.LastOperationHttpStatusCode.ShouldEqual(HttpStatusCode.OK);
-            
         }
     }
 }

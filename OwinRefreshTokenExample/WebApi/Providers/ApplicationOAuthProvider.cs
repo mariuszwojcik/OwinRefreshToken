@@ -161,7 +161,7 @@ namespace WebApi.Providers
             AuthenticationTicket ticket;
             if (_refreshTokens.TryGetValue(context.Token, out ticket))
             {
-                ticket.Properties.ExpiresUtc = ticket.Properties.IssuedUtc.Value.UtcDateTime.AddMinutes(5);
+                ticket.Properties.ExpiresUtc = ticket.Properties.IssuedUtc.Value.UtcDateTime.AddSeconds(15);
                 context.SetTicket(ticket);
             }
         }

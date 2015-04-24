@@ -78,7 +78,6 @@ namespace WebApi.IntegrationTests
                 using (var sr = new StreamReader(s))
                 {
                     LastOperationResponse = sr.ReadToEnd();
-                    Console.WriteLine(LastOperationResponse);
                 }
                 return null;
             }
@@ -102,8 +101,10 @@ namespace WebApi.IntegrationTests
                 var data = new NameValueCollection
                 {
                     {"grant_type", "refresh_token"},
-                    {"refresh_token", refreshToken}
+                    {"refresh_token", refreshToken},
+                    {"client_id", "OwinRefreshTokenExample"}
                 };
+                //Headers.Remove(HttpRequestHeader.Authorization);
                 Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
                 var result = UploadValues(TokenEndpointUrl, data);
                 LastOperationHttpStatusCode = HttpStatusCode.OK;
@@ -127,7 +128,6 @@ namespace WebApi.IntegrationTests
                 using (var sr = new StreamReader(s))
                 {
                     LastOperationResponse = sr.ReadToEnd();
-                    Console.WriteLine(LastOperationResponse);
                 }
                 return null;
             }
